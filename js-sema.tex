@@ -62,7 +62,7 @@ language=js
 \date{}
 \begin{document}
 
-\title{On \js}
+\title{Undestanding \js Semantics}
 
 \author{Peter Lozov, Dmitri Kosarev, Dmitri Boulytchev}
 %{St.Petersburg State University \\ 
@@ -72,7 +72,9 @@ language=js
 \maketitle
 
 \begin{abstract}
-We 
+  In this document we discuss the pecularities of \js semantics and give some
+  guidelines which would help to navigate throught and understand the relavant
+  literature.
 \end{abstract}
 
 \section{Introduction}
@@ -120,8 +122,8 @@ program
      };
 \end{lstlisting}
 
-is reported to behave differently under different implementations by their different one- vs. multi-pass
-architectures (as per moment of writing). The function definitions in \es are \emph{hoisted} (order-preserving
+is reported to behave differently (as per moment of writing) under different implementations due to their
+different one- vs. multi-pass architectures. The function definitions in \es are \emph{hoisted} (order-preserving
 moved to the top of the scope they are declared in), thus the last definition of ``\lstinline|g|'' shadows
 all others, which is not always respected by the implementations.
 
