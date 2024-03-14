@@ -1,0 +1,167 @@
+% !TEX TS-program = pdflatex
+% !TeX spellcheck = en_US
+% !TEX root = uigen.tex
+\documentclass{article}
+
+\usepackage{graphicx}
+%\usepackage{tikz}
+%\usetikzlibrary{shapes.geometric,backgrounds,
+%  positioning-plus,node-families,calc}
+\usepackage{xcolor}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{marginnote}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{amsmath,mathrsfs,amssymb}
+\usepackage{placeins}
+\usepackage{textcomp}
+\usepackage{xspace}
+
+
+\lstdefinelanguage{js}{
+keywords={function, if, else, return, var, true},
+sensitive=true,
+commentstyle=\small\itshape\rmfamily,
+keywordstyle=\bfseries\rmfamily,
+identifierstyle=\rmfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+literate={->}{{$\to$}}3 {===}{{$\equiv$}}1 {=/=}{{$\not\equiv$}}1 {|>}{{$\triangleright$}}3 {|||}{{$\vee$}}2 {/\\}{{$\wedge$}}2 {^}{{$\uparrow$}}1,
+morecomment=[s]{(*}{*)}
+}
+
+\lstset{
+mathescape=true,
+basicstyle=\small,
+%identifierstyle=\ttfamily,
+%keywordstyle=\bfseries,
+%commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+language=js
+}
+
+\newcommand{\term}[1]{\mbox{\texttt{\textbf{#1}}}}
+\newcommand{\run}[2]{\term{run}^{#1}\,\left[#2\right]}
+\newcommand{\todo}[1]{{\bf\color{red}#1}}
+\newcommand{\rel}[3]{{#1}\xrightarrow{#2}{#3}}
+\newcommand{\prg}[1]{\mbox{\lstinline|#1|}}
+\newcommand{\precprec}{\prec\mathrel{\mkern-5mu}\prec}
+
+\newcommand{\grc}[2]{{#1}\,\left<{#2}\right>}
+\newcommand{\java}[1]{\texttt{#1}}
+\newcommand{\primi}[1]{\mathbf{#1}}
+\newcommand{\cc}[1]{\lfloor{#1}\rfloor}
+\newcommand{\js}{\textsc{JavaScript}\xspace}
+\newcommand{\es}{\textsc{ECMAScript}\xspace}
+\newcommand{\ecma}{\textsc{Ecma International}\xspace}
+\sloppy
+\date{}
+\begin{document}
+
+\title{On \js}
+
+\author{Peter Lozov, Dmitri Kosarev, Dmitri Boulytchev}
+%{St.Petersburg State University \\ 
+%  Saint-Petersburg, Russia }
+%{$\mathtt{Dmitrii.Kosarev@protonmail.ch}$ \and $\mathtt{dboulytchev@math.spbu.ru}$}
+
+\maketitle
+
+\begin{abstract}
+We 
+\end{abstract}
+
+\section{Introduction}
+
+\js is a general-purpose language which serves as a \emph{de-facto} standard for web-based
+applications development. Historically, \js was developed and released in the middle of 1990s
+as a mean to add dynamicity to web-pages. Language-wise, \js is an imperative object-oriented
+dynamically typed language with first-class functions and objects. Currently \js is
+supported by all mainstream web-browsers via different implementations: \textsc{V8}~\cite{V8}
+for \textsc{Chrome}-based browsers, \textsc{Chakra}~--- for \textsc{Microsoft Edge},
+\textsc{SpiderMonkey}~\cite{SpiderMonkey}~--- for \textsc{Mozilla Firefox} and some others, and,
+finally, \textsc{JavaScriptCore}~\cite{JavaScriptCore} for \textsc{Safari}.
+
+Nowdays \js is a full-fledged general-purpose programming language which possesses a number of
+somewhat unique pecularities. While for a regular web programming it is often sufficient to
+stick with a number of tutorials~\cite{Tutorial} developing \emph{tools} require a
+much greater level of internalization of \js semantics. This document provides some
+introduction to \js pecular features, reference to relevant documentation and
+some guidelines for its reading and understanding.
+
+The principal source of information on \js is the specification~\cite{Spec} which is maintained by
+\ecma~--- an European standartization organization in the domain of informatics and telecommunications.
+The specification spans over 800 pages and is intended to be self-sufficient. For this purpose
+the first sections introduce the terminological and typographical conventions used throuhout the rest of
+the specification as well as algorithmic notation for specifying the semantics of some built-in operations
+and procedures. However being written in a natural language the specification is verbose and hardly admits
+formal treatment. For this purpose a number of attempts to re-formulate the semantics of the language
+in more conventional terms were taken. In~\cite{Operational1,Operational2} a small-step operational
+semantics is given for a reasonably chosen subset of the language and some safety properties for
+\js programs are proven. The resulting formal semantics (as reported by the authors) occupies 70 pages of
+ASCII code. The papers also investigate the differences in implementations; for example, the following
+program
+
+\begin{lstlisting}
+   var f =
+     function () {
+       if (true) {function g() {return 1}}
+       else      {function g() {return 2}};
+       
+       function g () {return 3};
+    
+       return g ();
+    
+       function g() {return 4}
+     };
+\end{lstlisting}
+
+is reported to behave differently under different implementations by their different one- vs. multi-pass
+architectures (as per moment of writing). The function definitions in \es are \emph{hoisted} (order-preserving
+moved to the top of the scope they are declared in), thus the last definition of ``\lstinline|g|'' shadows
+all others, which is not always respected by the implementations.
+
+Another attempt is taken in~\cite{Trusted,JSCert} where a certified implementation of \js in \textsc{Coq} is
+presented. The development is accompanied with an extracted reference interpreter and a number of tests. The
+results reported are reproducible after a reasonal amount of efforts~\cite{JSCert-lozov}.
+
+It's worth noticing that both mentioned results deal with minor versions of \es (\es-4 and \es-5 respectively), thus
+they do not support some more recent features of the language such as, for example, classes. Moreover, even
+within the addressed standard not all features are supported which makes their direct usage as a reference
+implementation problematic.
+
+\section{\js Object Model}
+
+\section{Prototype-based Inheritance}
+
+
+\begin{thebibliography}{99}
+\bibitem{Spec}
+  \es\textsuperscript{\textregistered} 2025 Language Specification. Draft ECMA-262, March 7, 2024 //
+  \url{https://tc39.es/ecma262/}
+\bibitem{Operational1}
+  Sergio Maffeis, John C. Mitchell, Ankur Taly. An Operational Semantics for \js. // Asian Symposium on Programming Languages and Systems, 2008, pp.~307-325,
+  \url{https://seclab.stanford.edu/websec/jsPapers/aplas08-camera-ready.pdf}
+\bibitem{Operational2}
+  Sergio Maffeis, John C. Mitchell, Ankur Taly. An Operational Semantics for \js, revised and extended version // \url{http://jssec.net/semantics/sjs.pdf}
+\bibitem{Trusted}
+  Martin Bodin, Arthur Chargueraud, Daniele Filaretti, Philippa Gardner, Sergio Maffeis, Daiva Naudziuniene, Alan Schmitt, Gareth Smith. A Trusted Mechanised \js Specification //
+  POPL'14: Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages, January 2014, pp.~87–100.
+\bibitem{JSCert}
+  A Coq Specification of \es~5 (\js) with Verified Reference Interpreter // \url{jscert.org}
+\bibitem{JSCert-lozov}
+  A Coq Specification of \es~5 (\js) with Verified Reference Interpreter, reflections on building, installation, and run // \url{https://github.com/Lozov-Petr/jscert}  
+\bibitem{Ecma} \ecma. Industry Association for Standardizing Information and Communication Systems // \url{https://ecma-international.org}
+\bibitem{Chakra} \textsc{ChakraCore} project website // \url{https://github.com/chakra-core/ChakraCore}
+\bibitem{SpiderMonkey} \textsc{SpiderMonkey} project website // \url{https://spidermonkey.dev}
+\bibitem{V8} \textsc{V8} project website // \url{https://chromium.googlesource.com/v8/v8}
+\bibitem{JavaScriptCore} \textsc{JavaScriptCore} project website // \url{https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html}
+\bibitem{Tutorial} \js Tutorial // \url{https://www.w3schools.com/js/}
+\end{thebibliography}
+
+\end{document}
+
