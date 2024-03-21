@@ -21,7 +21,7 @@
 
 
 \lstdefinelanguage{js}{
-keywords={function, if, else, return, var, true},
+keywords={function, if, else, return, var, true, this},
 sensitive=true,
 commentstyle=\small\itshape\rmfamily,
 keywordstyle=\bfseries\rmfamily,
@@ -58,6 +58,7 @@ language=js
 \newcommand{\js}{\textsc{JavaScript}\xspace}
 \newcommand{\es}{\textsc{ECMAScript}\xspace}
 \newcommand{\ecma}{\textsc{Ecma International}\xspace}
+\newcommand{\rf}[1]{[\textsc{#1}]}
 \sloppy
 \date{}
 \begin{document}
@@ -73,7 +74,7 @@ language=js
 
 \begin{abstract}
   In this document we discuss the pecularities of \js semantics and give some
-  guidelines which would help to navigate throught and understand the relavant
+  guidelines which would help to navigate through and understand the relavant
   literature.
 \end{abstract}
 
@@ -89,10 +90,10 @@ for \textsc{Chrome}-based browsers, \textsc{Chakra}~--- for \textsc{Microsoft Ed
 finally, \textsc{JavaScriptCore}~\cite{JavaScriptCore} for \textsc{Safari}.
 
 Nowdays \js is a full-fledged general-purpose programming language which possesses a number of
-somewhat unique pecularities. While for a regular web programming it is often sufficient to
+somewhat unique properties. While for a regular web programming it is often sufficient to
 stick with a number of tutorials~\cite{Tutorial} developing \emph{tools} require a
 much greater level of internalization of \js semantics. This document provides some
-introduction to \js pecular features, reference to relevant documentation and
+introduction to \js pecular features, references to relevant documentation and
 some guidelines for its reading and understanding.
 
 The principal source of information on \js is the specification~\cite{Spec} which is maintained by
@@ -101,7 +102,7 @@ The specification spans over 800 pages and is intended to be self-sufficient. Fo
 the first sections introduce the terminological and typographical conventions used throuhout the rest of
 the specification as well as algorithmic notation for specifying the semantics of some built-in operations
 and procedures. However being written in a natural language the specification is verbose and hardly admits
-formal treatment. For this purpose a number of attempts to re-formulate the semantics of the language
+a formal treatment. For this purpose a number of attempts to re-formulate the semantics of the language
 in more conventional terms were taken. In~\cite{Operational1,Operational2} a small-step operational
 semantics is given for a reasonably chosen subset of the language and some safety properties for
 \js programs are proven. The resulting formal semantics (as reported by the authors) occupies 70 pages of
@@ -111,14 +112,14 @@ program
 \begin{lstlisting}
    var f =
      function () {
-       if (true) {function g() {return 1}}
-       else      {function g() {return 2}};
+       if (true) {function g () {return 1}}
+       else      {function g () {return 2}};
        
        function g () {return 3};
     
        return g ();
     
-       function g() {return 4}
+       function g () {return 4}
      };
 \end{lstlisting}
 
@@ -136,10 +137,23 @@ they do not support some more recent features of the language such as, for examp
 within the addressed standard not all features are supported which makes their direct usage as a reference
 implementation problematic.
 
+In the subsequent sections we address some properties of \js semantics which we consider the most interesting; we
+label the description with the exact references to the \es specification given in a \rf{designated} form.
+
 \section{\js Object Model}
+
+Objects~\rf{6.1.7} constitute the most important kind of values \js programs operate with. In a nutshell, objects are
+finite collections of \emph{properties}. The specification makes a distinction between \emph{data} properties and \emph{accessor}
+properties, but these details are not essential for now. Each property posesses a \emph{key} which in fact can be a \emph{symbol}
+(indentifier), a string or an integer, and a \emph{value} which is a regular \js value. Thus, objects are finite maps.
+
+In order to make it possible to specify objects explicitly \js introduces a dedicated notation~--- JSON (\js Object Notation).
+
+\section{The Magic of ``\lstinline[basicstyle=\normal]|this|''}
 
 \section{Prototype-based Inheritance}
 
+\section{Mixins}
 
 \begin{thebibliography}{99}
 \bibitem{Spec}
