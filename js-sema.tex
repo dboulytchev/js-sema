@@ -144,14 +144,25 @@ label the description with the exact references to the \es specification given i
 
 Objects~\rf{6.1.7} constitute the most important kind of values \js programs operate with. In a nutshell, objects are
 finite collections of \emph{properties}. The specification makes a distinction between \emph{data} properties and \emph{accessor}
-properties, but these details are not essential for now. Each property posesses a \emph{key} which in fact can be a \emph{symbol}
+properties. Each property posesses a \emph{key} which in fact can be a \emph{symbol}
 (indentifier), a string or an integer, and a \emph{value} which is a regular \js value. Thus, objects are finite maps.
-
 In order to make it possible to specify objects explicitly \js introduces a dedicated notation~--- JSON (\js Object Notation).
+
+The essential property of \js objects is their dynamic nature. Properties can be added, removed, and modified at a runtime.
+Additionally, each property is equipped with a set of \emph{attributes}~\rf{6.1.7.1} which controls what operations are permitted
+for this property. These attributes can be set at a runtime, too.
+
+The specification distinguishes \emph{ordinary}~\rf{10.1} objects from \emph{exotic}~\rf{10.4} ones. The difference between the
+two lays in different behaviour of some built-in operations. 
+
+All objects form a hierarchy via a \emph{prototype} inherinace (see Section~\ref{sec:prototype}). The basis of
+this hierarchy is \lstinline|Object| object~\rf{20.1} which defines the properties common for all objects.
+
 
 \section{The Magic of ``\lstinline[basicstyle=\normal]|this|''}
 
 \section{Prototype-based Inheritance}
+\label{sec:prototype}
 
 \section{Mixins}
 
