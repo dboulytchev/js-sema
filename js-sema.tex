@@ -21,7 +21,7 @@
 
 
 \lstdefinelanguage{js}{
-keywords={function, if, else, return, var, true, this},
+keywords={for, in, delete, let, function, if, else, return, var, true, this, new},
 sensitive=true,
 commentstyle=\small\itshape\rmfamily,
 keywordstyle=\bfseries\rmfamily,
@@ -140,29 +140,150 @@ implementation problematic.
 In the subsequent sections we address some properties of \js semantics which we consider the most interesting; we
 label the description with the exact references to the \es specification given in a \rf{designated} form.
 
-\section{\js Object Model}
+\section{Objects}
+\label{sec:model}
 
 Objects~\rf{6.1.7} constitute the most important kind of values \js programs operate with. In a nutshell, objects are
 finite collections of \emph{properties}. The specification makes a distinction between \emph{data} properties and \emph{accessor}
 properties. Each property posesses a \emph{key} which in fact can be a \emph{symbol}
 (indentifier), a string or an integer, and a \emph{value} which is a regular \js value. Thus, objects are finite maps.
 In order to make it possible to specify objects explicitly \js introduces a dedicated notation~--- JSON (\js Object Notation).
+For example, in the following snippet
+
+\begin{lstlisting}
+    let obj = {name: "object"; id : 1};
+\end{lstlisting}
+
+an explicit object with two properties named ``\lstinline|name|'' and ``\lstinline|id|'' with values \lstinline|"object"| and
+\lstinline|1| respectively is defined; a reference to this object is placed in the variable \lstinline|obj|.
 
 The essential property of \js objects is their dynamic nature. Properties can be added, removed, and modified at a runtime.
-Additionally, each property is equipped with a set of \emph{attributes}~\rf{6.1.7.1} which controls what operations are permitted
-for this property. These attributes can be set at a runtime, too.
+In the context of the previous example one can make
+
+\begin{lstlisting}
+    obj.name = 3;
+    obj.kind = "new property example";
+    delete obj.id;
+\end{lstlisting}
+
+changing the value (and a type) of the property ``\lstinline|name|'', adding a new property ``\lstinline|kind|'' with
+corresponding value and deleting the property ``\lstinline|id|''. Additionally, each property is equipped with a set
+of \emph{attributes}~\rf{6.1.7.1} which controls what operations are permitted for this property. These attributes can
+be set at a runtime, too. 
 
 The specification distinguishes \emph{ordinary}~\rf{10.1} objects from \emph{exotic}~\rf{10.4} ones. The difference between the
-two lays in different behaviour of some built-in operations. 
+two lays in different behaviour of some built-in operations. For example, arrays ans strings are exotic since they
+accept integers as names for their properties.
 
-All objects form a hierarchy via a \emph{prototype} inherinace (see Section~\ref{sec:prototype}). The basis of
+All objects form a hierarchy via a \emph{prototype} inheritace (see Section~\ref{sec:prototype}). The basis of
 this hierarchy is \lstinline|Object| object~\rf{20.1} which defines the properties common for all objects.
+In the context of previous example one may perform a call
+
+\begin{lstlisting}
+    obj.toString ()
+\end{lstlisting}
+
+although "\lstinline|obj|" does not possess ``\lstinline|toString|'' as its own property. This property is ``borrowed''
+from \lstinline|Object|. The call returns string \lstinline|"[object Object]"| in a full accordance with the
+specification~\rf{20.1.3.6}.
+
+The language is equipped with a control construct~\rf{14.7.5} which, in particular, allows for iterating over
+all properties of objects. For example the construct
+
+\begin{lstlisting}
+    for (let p in obj) {
+      ...
+    }
+\end{lstlisting}
+
+goes over all \emph{own} properties of an object ``\lstinline|obj|'', binding identifier ``\lstinline|p|'' to the
+name of a property on each iteration. The property's value then can be accessed via construct ``\lstinline|obj [p]|''.
+
+\section{Functions, Constructors, and Prototypes}
+\label{sec:prototype}
+
+\js equipped with full-fledged first-class functions with closures. Beside that, however, functions possess a number of pecularities.
+
+First, functions are regular objects. For example, given a definition
+
+\begin{lstlisting}
+    let f = function (x) {return x;};
+\end{lstlisting}
+
+one may make a call
+
+\begin{lstlisting}
+    f.toString ()
+\end{lstlisting}
+
+which returns a string ``\lstinline|function (x) {return x;}|''. Since (as is it rather natural to anticipate) ``\lstinline|toString|''
+is a function it can be called on itself
+
+\begin{lstlisting}
+    f.toString.toString ()
+\end{lstlisting}
+
+which returns ``\lstinline|function toString() { [native code] }|''. Function objects~\rf{20.2} occupy a dedicated place in objects' hierarchy
+and share a number of common properties. For example
+
+\begin{lstlisting}
+    f.length
+\end{lstlisting}
+
+gives a number of arguments which function ``\lstinline|f|'' accepts.
+
+Then, functions play role of \emph{constructors}~\rf{6.1.7.2}. For example, the following definition
+
+\begin{lstlisting}
+    function Person (name, age, address) {
+      this.name    = name;
+      this.age     = age;
+      this.address = address;
+    }
+\end{lstlisting}
+
+allows for creating a similarly structured objects \emph{en masse}:
+
+\begin{lstlisting}
+    let Alice      = new Person ("Alice", 12, "Wonderland");
+    let MadHatter  = new Person ("Mad Hatter", undefined, "Tea Party");  
+\end{lstlisting}
+
+It is worth mentioning that there is nothing special about function ``\lstinline|Person|'' in
+comparison with other functions. Its role as a constructor is primarily conventionalized
+by a usage together with the construct ``\lstinline|new|''. Internally, \js sometimes can
+tell constructor functions apart from non-constructor ones (for example, for built-in functions or
+functions explicitly defined as class construtors), but for regular user-defined functions
+it can not do this. Therefore, there is nothing wrong with a plain call
+
+\begin{lstlisting}
+    let x = Person ("Global Object", 0, "Right Here");
+\end{lstlisting}
+
+However, in this case corresponding properties will be added or set for the \emph{global object}~\rf{19} by
+the discipline of binding for ``\lstinline|this|'' (see Section~\ref{sec:this}).
+
+Similarly, a function
+
+\begin{lstlisting}
+    function foo (x, y) {return x+y;}
+\end{lstlisting}
+
+can be coupled with ``\lstinline|new|'':
+
+\begin{lstlisting}
+    let p = new foo (2, 3);
+\end{lstlisting}
+
+The result associated with ``\lstinline|p|'', however, will be an empty \lstinline|Object| rather then number 5.
+
+Finally, function objects posess a property called ``\lstinline|prototype|'' which is used for implementing
+inheritance. Each object holds an implicit reference to the the object referenced by ``\lstinlie|prototype|''
+property of a constructor this object was created by. 
 
 
 \section{The Magic of ``\lstinline[basicstyle=\normal]|this|''}
-
-\section{Prototype-based Inheritance}
-\label{sec:prototype}
+\label{sec:this}
 
 \section{Mixins}
 
