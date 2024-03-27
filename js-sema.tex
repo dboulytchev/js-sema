@@ -287,18 +287,60 @@ property of a constructor this object was created by. In this regard constructor
 \end{lstlisting}
 
 gives back the string \lstinline|"function Object() { [native code] }"|, and similarly for \lstinline|Function|,
-\lstinline|String|, \lstinline|Number|, \lstinline|Data| and  all other ``standard types''.
+\lstinline|String|, \lstinline|Number|, \lstinline|Date| and  all other ``standard types''.
 
 As prototypes are regular objects their set of properties can be manupulated with. We show this by the following
 example: given the definitions for \lstinline|Alice| and \lstinline|MadHatter| shown above we can do
 
 \begin{lstlisting}
-   Alice.mood = "cheerful";
+    Alice.mood = "cheerful";
 \end{lstlisting}
 
 Now \lstinline|Alice| and \lstinline|MadHatter| have different sets of properties: \lstinline|Alice| has its
 own property ``\lstinline|mood|'' while \lstinline|MadHatter| has not (which can be easily
-tested). 
+tested). On the other hand, we could add the ``\lstinline|mood|'' property to the \emph{prototype} of
+\lstinline|Person|:
+
+\begin{lstlisting}
+    Person.prototype.mood = "indifferent";
+\end{lstlisting}
+
+Now all instances of \lstinline|Person| acquire given property with given value; in particular
+
+\begin{lstlisting}
+    MadHatter.mood
+\end{lstlisting}
+
+is now evaluated to \lstinline|"indifferent"|. However,
+
+\begin{lstlisting}
+    Alice.mood
+\end{lstlisting}
+
+is still \lstinline|"cheerful"| since it refers to \lstinline|Alice|'s \emph{own}
+property which overrides that in the prototype. Deleting this property
+
+\begin{lstlisting}
+    delete Alice.mood
+\end{lstlisting}
+
+reverts \lstinline|Alice.mood| to \lstinlin|"indifferent"| since now the resolution
+procedure ends up in the prototype.
+
+Prototype properties can be modified only for prototype as whole. For example,
+
+\begin{lstlisting}
+    MadHatter.mood = "gloomy"
+\end{lstlisting}
+
+does not change \lstinline|Alice.mood| since it introduces \lstinline|MadHatter|'s own
+property.
+
+In overall, the resolution process for reading a property of an objects first
+tries to find its own property and if the property is not found it recurses in
+its prototype; writing a property creates an own property of an object or
+changes its value if such an own property already exists. 
+
 
 \section{The Magic of ``\lstinline[basicstyle=\normal]|this|''}
 \label{sec:this}
