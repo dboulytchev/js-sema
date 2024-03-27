@@ -202,7 +202,7 @@ name of a property on each iteration. The property's value then can be accessed 
 \section{Functions, Constructors, and Prototypes}
 \label{sec:prototype}
 
-\js equipped with full-fledged first-class functions with closures. Beside that, however, functions possess a number of pecularities.
+\js is equipped with full-fledged first-class functions with closures. Beside that, however, functions possess a number of pecularities.
 
 First, functions are regular objects. For example, given a definition
 
@@ -217,7 +217,7 @@ one may make a call
 \end{lstlisting}
 
 which returns a string ``\lstinline|function (x) {return x;}|''. Since (as is it rather natural to anticipate) ``\lstinline|toString|''
-is a function it can be called on itself
+is a function as well it can be called on itself
 
 \begin{lstlisting}
     f.toString.toString ()
@@ -253,7 +253,7 @@ It is worth mentioning that there is nothing special about function ``\lstinline
 comparison with other functions. Its role as a constructor is primarily conventionalized
 by a usage together with the construct ``\lstinline|new|''. Internally, \js sometimes can
 tell constructor functions apart from non-constructor ones (for example, for built-in functions or
-functions explicitly defined as class construtors), but for regular user-defined functions
+functions explicitly defined as class constructors), but for regular user-defined functions
 it can not do this. Therefore, there is nothing wrong with a plain call
 
 \begin{lstlisting}
@@ -278,9 +278,27 @@ can be coupled with ``\lstinline|new|'':
 The result associated with ``\lstinline|p|'', however, will be an empty \lstinline|Object| rather then number 5.
 
 Finally, function objects posess a property called ``\lstinline|prototype|'' which is used for implementing
-inheritance. Each object holds an implicit reference to the the object referenced by ``\lstinlie|prototype|''
-property of a constructor this object was created by. 
+inheritance. Each object holds an implicit reference to the ``\lstinline|prototype|''
+property of a constructor this object was created by. In this regard constructor functions play role of ``types'':
+\lstinline|Object| is not a ``type'' in \js, but a function:
 
+\begin{lstlisting}
+    Object.toString ()
+\end{lstlisting}
+
+gives back the string \lstinline|"function Object() { [native code] }"|, and similarly for \lstinline|Function|,
+\lstinline|String|, \lstinline|Number|, \lstinline|Data| and  all other ``standard types''.
+
+As prototypes are regular objects their set of properties can be manupulated with. We show this by the following
+example: given the definitions for \lstinline|Alice| and \lstinline|MadHatter| shown above we can do
+
+\begin{lstlisting}
+   Alice.mood = "cheerful";
+\end{lstlisting}
+
+Now \lstinline|Alice| and \lstinline|MadHatter| have different sets of properties: \lstinline|Alice| has its
+own property ``\lstinline|mood|'' while \lstinline|MadHatter| has not (which can be easily
+tested). 
 
 \section{The Magic of ``\lstinline[basicstyle=\normal]|this|''}
 \label{sec:this}
