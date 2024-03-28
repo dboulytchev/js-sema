@@ -1,3 +1,3 @@
 # js-sema
 
-[JavaScript Semantics Understanding Guidelines] (js-sema.pdf)
+[JavaScript Semantics Understanding Guidelines](js-sema.pdf)
