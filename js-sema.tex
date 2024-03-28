@@ -23,7 +23,7 @@
 \lstdefinelanguage{js}{
 keywords={for, in, delete, let, function, if, else, return, var, true, this, new},
 sensitive=true,
-commentstyle=\small\itshape\rmfamily,
+commentstyle=\itshape\rmfamily,
 keywordstyle=\bfseries\rmfamily,
 identifierstyle=\rmfamily,
 basewidth={0.5em,0.5em},
@@ -35,7 +35,7 @@ morecomment=[s]{(*}{*)}
 
 \lstset{
 mathescape=true,
-basicstyle=\small,
+basicstyle=\rmfamily,
 %identifierstyle=\ttfamily,
 %keywordstyle=\bfseries,
 %commentstyle=\scriptsize\rmfamily,
@@ -59,6 +59,7 @@ language=js
 \newcommand{\es}{\textsc{ECMAScript}\xspace}
 \newcommand{\ecma}{\textsc{Ecma International}\xspace}
 \newcommand{\rf}[1]{[\textsc{#1}]}
+\newcommand{\out}[1]{\texttt{#1}}
 \sloppy
 \date{}
 \begin{document}
@@ -94,7 +95,7 @@ somewhat unique properties. While for a regular web programming it is often suff
 stick with a number of tutorials~\cite{Tutorial} developing \emph{tools} require a
 much greater level of internalization of \js semantics. This document provides some
 introduction to \js pecular features, references to relevant documentation and
-some guidelines for its reading and understanding.
+some guidelines for its reading and understanding. 
 
 The principal source of information on \js is the specification~\cite{Spec} which is maintained by
 \ecma~--- an European standartization organization in the domain of informatics and telecommunications.
@@ -145,7 +146,7 @@ label the description with the exact references to the \es specification given i
 
 Objects~\rf{6.1.7} constitute the most important kind of values \js programs operate with. In a nutshell, objects are
 finite collections of \emph{properties}. The specification makes a distinction between \emph{data} properties and \emph{accessor}
-properties. Each property posesses a \emph{key} which in fact can be a \emph{symbol}
+properties. Each property possesses a \emph{key} which in fact can be a \emph{symbol}
 (indentifier), a string or an integer, and a \emph{value} which is a regular \js value. Thus, objects are finite maps.
 In order to make it possible to specify objects explicitly \js introduces a dedicated notation~--- JSON (\js Object Notation).
 For example, in the following snippet
@@ -184,7 +185,7 @@ In the context of previous example one may perform a call
 \end{lstlisting}
 
 although "\lstinline|obj|" does not possess ``\lstinline|toString|'' as its own property. This property is ``borrowed''
-from \lstinline|Object|. The call returns string \lstinline|"[object Object]"| in a full accordance with the
+from \lstinline|Object|. The call returns string \out{"[object Object]"} in a full accordance with the
 specification~\rf{20.1.3.6}.
 
 The language is equipped with a control construct~\rf{14.7.5} which, in particular, allows for iterating over
@@ -216,14 +217,14 @@ one may make a call
     f.toString ()
 \end{lstlisting}
 
-which returns a string ``\lstinline|function (x) {return x;}|''. Since (as is it rather natural to anticipate) ``\lstinline|toString|''
+which returns a string \out{"function (x) \{return x;\}"}. Since (as is it rather natural to anticipate) ``\lstinline|toString|''
 is a function as well it can be called on itself
 
 \begin{lstlisting}
     f.toString.toString ()
 \end{lstlisting}
 
-which returns ``\lstinline|function toString() { [native code] }|''. Function objects~\rf{20.2} occupy a dedicated place in objects' hierarchy
+which returns \out{"function toString() \{ [native code] \}"}. Function objects~\rf{20.2} occupy a dedicated place in objects' hierarchy
 and share a number of common properties. For example
 
 \begin{lstlisting}
@@ -277,7 +278,7 @@ can be coupled with ``\lstinline|new|'':
 
 The result associated with ``\lstinline|p|'', however, will be an empty \lstinline|Object| rather then number 5.
 
-Finally, function objects posess a property called ``\lstinline|prototype|'' which is used for implementing
+Finally, function objects possess a property called ``\lstinline|prototype|'' which is used for implementing
 inheritance. Each object holds an implicit reference to the ``\lstinline|prototype|''
 property of a constructor this object was created by. In this regard constructor functions play role of ``types'':
 \lstinline|Object| is not a ``type'' in \js, but a function:
@@ -286,7 +287,7 @@ property of a constructor this object was created by. In this regard constructor
     Object.toString ()
 \end{lstlisting}
 
-gives back the string \lstinline|"function Object() { [native code] }"|, and similarly for \lstinline|Function|,
+gives back the string \out{"function Object() \{ [native code] \}"}, and similarly for \lstinline|Function|,
 \lstinline|String|, \lstinline|Number|, \lstinline|Date| and  all other ``standard types''.
 
 As prototypes are regular objects their set of properties can be manupulated with. We show this by the following
@@ -311,20 +312,20 @@ Now all instances of \lstinline|Person| acquire given property with given value;
     MadHatter.mood
 \end{lstlisting}
 
-is now evaluated to \lstinline|"indifferent"|. However,
+is now evaluated to \out{"indifferent"}. However,
 
 \begin{lstlisting}
     Alice.mood
 \end{lstlisting}
 
-is still \lstinline|"cheerful"| since it refers to \lstinline|Alice|'s \emph{own}
+is still \out{"cheerful"} since it refers to \lstinline|Alice|'s \emph{own}
 property which overrides that in the prototype. Deleting this property
 
 \begin{lstlisting}
     delete Alice.mood
 \end{lstlisting}
 
-reverts \lstinline|Alice.mood| to \lstinlin|"indifferent"| since now the resolution
+reverts \lstinline|Alice.mood| to \out{"indifferent"} since now the resolution
 procedure ends up in the prototype.
 
 Prototype properties can be modified only for prototype as whole. For example,
@@ -341,11 +342,123 @@ tries to find its own property and if the property is not found it recurses in
 its prototype; writing a property creates an own property of an object or
 changes its value if such an own property already exists. 
 
+Modification of prototypes makes it possible to introduce global changes in
+program behaviour. For example
 
-\section{The Magic of ``\lstinline[basicstyle=\normal]|this|''}
+\begin{lstlisting}
+    Object.prototype.toString = function () {JSON.stringify (this);};
+\end{lstlisting}
+
+changes the default way in which objects are rendered as strings. 
+
+\section{Methods, Inheritance, and Late Binding}
+\label{sec:inheritance}
+
+Object-oriented constructs which are built in many conventional object-oriented
+languages can be simulated in \js using mechanisms described in the previous sections.
+
+Methods are functional properties of objects:
+
+\begin{lstlisting}
+    let obj = {
+      name     : "Alice",
+      surname  : "Liddell",
+      fullname : function () {return this.name + " " + this.surname;}
+    };
+\end{lstlisting}
+
+Methods can also be defined in constructors:
+
+\begin{lstlisting}
+    function Person (name, surname) {
+      this.name     = name;
+      this.surname  = surname;
+      this.fullname =
+        function () {
+          return this.name + " " + this.surname;
+        };
+    }
+\end{lstlisting}
+
+Using prototypes some default methods can be added for all instances created by
+a constructor:
+
+\begin{lstlisting}
+    Person.prototype.abbrevname =
+      function () {return this.name[0] + ". " + this.surname;};
+\end{lstlisting}
+
+This ``default'' implementation can be overridden in a concrete instance:
+
+\begin{lstlisting}
+    let Alice = new Person ("Alice", "Liddell");
+
+    Alice.abbrevname = function () {return "The Alice";};
+\end{lstlisting}
+
+These examples work as expected by the very dynamic nature of property resolution in \js.
+
+Finally, inheritance can be simulated by manipulating with prototypes. Let us
+reiterate the last example:
+
+\begin{lstlisting}
+    function Person (name, surname) {
+      this.name     = name;
+      this.surname  = surname;
+      this.fullname =
+        function () {
+          return this.name + " " + this.surname;
+        };
+      this.abbrevname =
+        function () {
+          return this.name[0] + ". " + this.surname; 
+        };
+    }
+\end{lstlisting}
+
+Now we derive a new kind of objects which borrow some methods from
+``\lstinline|Person|'' and override some others:
+
+\begin{lstlisting}
+    function Traveller (name, surname, destination) {
+      this.name        = name;
+      this.surname     = surname;
+      this.destination = destination;
+      this.abbrevname  =
+        function () {
+          return this.name[0] + ". " + this.surname + " to " + destination; 
+        }
+    }
+
+    Traveller.prototype = new Person ("", "");
+\end{lstlisting}
+
+By setting the prototype of \lstinline|Traveller| to the ``default'' \lstinline|Person| instance we
+make the \js to search for non-overriden methods.
+
+We can also make an observation that in \js, as in any language with first-class functions,
+objects can be simulated in many other ways even not involving built-in object-oriented
+constructs like prototypes or ``\lstinline|this|''~\cite{Inheritance}.
+
+\section{The Magic of ``\textrm{this}''}
 \label{sec:this}
 
-\section{Mixins}
+As we've seen in the previous sections the behaviour of constructors and methods essentially
+depends on the binding rules for ``\lstinline|this|'' keyword:
+
+\begin{enumerate}
+\item in an object method, ``\lstinline|this|'' refers to the object;
+\item alone, ``\lstinline|this|'' refers to the global object;
+\item in a non-method function, ``\lstinline|this|'' refers to the global object.
+\end{enumerate}
+
+The exact description is given in~\rf{9.4.4}.
+
+%\section{Mixins}
+
+%\rf{20.2.3.2}
+
+%\section{Classes}
 
 \begin{thebibliography}{99}
 \bibitem{Spec}
@@ -369,6 +482,7 @@ changes its value if such an own property already exists.
 \bibitem{V8} \textsc{V8} project website // \url{https://chromium.googlesource.com/v8/v8}
 \bibitem{JavaScriptCore} \textsc{JavaScriptCore} project website // \url{https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html}
 \bibitem{Tutorial} \js Tutorial // \url{https://www.w3schools.com/js/}
+\bibitem{Inheritance} Rajesh Naroth. JavaScript Inheritance without ES6 classes // \url{https://rajeshnaroth.medium.com/javascript-inheritance-without-es6-classes-6ff546c0d58b}
 \end{thebibliography}
 
 \end{document}
