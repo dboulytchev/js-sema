@@ -75,7 +75,7 @@ language=js
 
 \begin{abstract}
   In this document we discuss the pecularities of \js semantics and give some
-  guidelines which would help to navigate through and understand the relavant
+  guidelines which would help to navigate through and understand the relevant
   literature.
 \end{abstract}
 
@@ -107,7 +107,11 @@ a formal treatment. For this purpose a number of attempts to re-formulate the se
 in more conventional terms were taken. In~\cite{Operational1,Operational2} a small-step operational
 semantics is given for a reasonably chosen subset of the language and some safety properties for
 \js programs are proven. The resulting formal semantics (as reported by the authors) occupies 70 pages of
-ASCII code. The papers also investigate the differences in implementations; for example, the following
+ASCII code.
+
+
+\begin{comment}
+The papers also investigate the differences in implementations; for example, the following
 program
 
 \begin{lstlisting}
@@ -128,6 +132,7 @@ is reported to behave differently (as per moment of writing) under different imp
 different one- vs. multi-pass architectures. The function definitions in \es are \emph{hoisted} (order-preserving
 moved to the top of the scope they are declared in), thus the last definition of ``\lstinline|g|'' shadows
 all others, which is not always respected by the implementations.
+\end{comment}
 
 Another attempt is taken in~\cite{Trusted,JSCert} where a certified implementation of \js in \textsc{Coq} is
 presented. The development is accompanied with an extracted reference interpreter and a number of tests. The
