@@ -459,9 +459,26 @@ depends on the binding rules for ``\lstinline|this|'' keyword:
 
 The exact description is given in~\rf{9.4.4}.
 
-%\section{Mixins}
+\section{Mixins}
+\label{sec:bind}
 
-%\rf{20.2.3.2}
+The concept on \emph{mixins}~\cite{mixins} is supported in \js by mean of
+function ``\lstinline|bind|''. Technically, ``\lstinline|bind|'' is a property of
+\lstinline|Function.prototype|, so it can be called of any function. ``\lstinline|bind|''
+accepts a single argument and binds the functions's \lstinline|this| to this argument.
+Thus, the argument object ``borrows'' the function as its method. Consider the following example:
+
+\begin{lstlisting}
+    let f = function () {return this.name;};
+
+    f.bind ({name: "Me"}) ()
+\end{lstlisting}
+
+Here the function ``\lstinline|f|'' returns the property ``\lstinline|name|'' of (presubamly)
+global object. However, \lstinline|bind| binds its ``\lstinline|this|'' to given object, and
+subsequent call returns the string \lstinline|"Me"|.
+
+The exact semantics of ``\lstinline|bind|'' is given in~\rf{20.2.3.2}
 
 %\section{Classes}
 
@@ -488,6 +505,7 @@ The exact description is given in~\rf{9.4.4}.
 \bibitem{JavaScriptCore} \textsc{JavaScriptCore} project website // \url{https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html}
 \bibitem{Tutorial} \js Tutorial // \url{https://www.w3schools.com/js/}
 \bibitem{Inheritance} Rajesh Naroth. JavaScript Inheritance without ES6 classes // \url{https://rajeshnaroth.medium.com/javascript-inheritance-without-es6-classes-6ff546c0d58b}
+\bibitem{mixins} Reginald Braithwaite. Mixins, Forwarding, and Delegation in JavaScript // \url{https://raganwald.com/2014/04/10/mixins-forwarding-delegation.html}
 \end{thebibliography}
 
 \end{document}
